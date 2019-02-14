@@ -11,7 +11,7 @@
  *
  * Work in progress
  * @todo:
- * add documentation
+ * add more documentation
  * add tests
  *
  * @license MIT
@@ -21,47 +21,68 @@
 const fs = require('fs')
 const https = require('https')
 const fetch = require('node-fetch')
-const minimist = require('minimist')
+const meow = require('meow');
 
 // @todo: document
 // ?? add option to set .env file path
 require('dotenv').config()
 
-var args = minimist(process.argv.slice(2), {
-  string: [
-    'env',
-    'url',
-    'output',
-    'token'
-  ],
-  boolean: 'unsafe',
-  alias: {
-    e: 'env',
-    u: 'url',
-    z: 'unsafe',
-    o: 'output',
-    t: 'token'
-  },
-  default: {
-    env: './.env',
-    url: process.env.VUE_APP_GRAPHQL_HTTP,
-    unsafe: false,
-    output: './fragmentTypes.json',
-    token: process.env.API_TOKEN || null
-   },
-})
+const help = `
+Usage
+  $ node index.js [flags]
+
+Options
+  --url, -u     URL to the API Endpoint.
+                Can be set in .env file as APP_GRAPHQL_ENDPOINT
+  --output, -o  Full Path to outputfile. Defaults to './fragmentTypes.json'
+  --token, -t   API endpoint token. Added to headers as "Bearer: {token}"
+                Can be set in .env file as APP_GRAPHQL_TOKEN
+  --unsafe -z   Warning - unsafe! Disalble test for SSL Certificats.
+                Can be useful with private certificates in local environment but please
+                first try adding the cert first NODE_EXTRA_CA_CERTS (se example below)
+Examples
+  $ node index.js -u http://your.endpoint.url -o ./graphql/fragmentTypes.json
+  $ NODE_EXTRA_CA_CERTS='/full/path/to/SelfSigned.pem' node node_modules/graphql-getfragmenttypes
+`
+const options = {
+  booleanDefault: undefined,
+  flags: {
+      url: {
+          type: 'string',
+          alias: 'u',
+          default: process.env.APP_GRAPHQL_ENDPOINT,
+      },
+      output: {
+          type: 'string',
+          alias: 'o',
+          default: './fragmentTypes.json',
+      },
+      token: {
+          type: 'string',
+          alias: 't',
+          default: process.env.APP_GRAPHQL_TOKEN || false,
+      },
+      unsafe: {
+        type: 'boolean',
+        alias: 'z',
+        default: false
+    }
+  }
+}
+
+const { flags } = meow(help, options);
 
 // @todo: add path to certificate as input paramter ?
-const options = {
+const httpsOptions = {
   // key: fs.readFileSync(
   //   '/Users/svale/.config/valet/CA/LaravelValetCASelfSigned.key'
   // ),
   // cert: fs.readFileSync(
   //   '/Users/svale/.config/valet/CA/LaravelValetCASelfSigned.pem'
   // ),
-  rejectUnauthorized: args.unsafe
+  rejectUnauthorized: !flags.unsafe
 }
-const agent = new https.Agent(options)
+const agent = new https.Agent(httpsOptions)
 
 /**
  * Add Authorization token (Bearer) to headers
@@ -70,14 +91,14 @@ const agent = new https.Agent(options)
 const headers = {
   'Content-Type': 'application/json',
 }
-if(args.token) {
-  headers.Authorization = `Bearer ${args.token}`
+if(flags.token) {
+  headers.Authorization = `Bearer ${flags.token}`
 }
 
 /**
  *  fetch schema and get fragment types
  */
-fetch(args.url, {
+ fetch(flags.url, {
   agent,
   method: 'POST',
   headers,
@@ -117,7 +138,7 @@ fetch(args.url, {
     )
     result.data.__schema.types = filteredData
     fs.writeFile(
-      args.output,
+      flags.output,
       JSON.stringify(result.data),
       err => {
         if (err) {
