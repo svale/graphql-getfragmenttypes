@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-'use strict';
+
+'use strict'
 
 /**
  * getFragmentTypes.js
@@ -21,17 +22,15 @@
 const fs = require('fs')
 const https = require('https')
 const fetch = require('node-fetch')
-const meow = require('meow');
+const meow = require('meow')
 require('dotenv').config() // @todo: add option to set .env file path ??
-
 
 /**
  * getFragmetypes
  *
  * @param {object} flags input flags parsed by meow
  */
-const getFragmentTypes = (flags) => {
-
+const getFragmentTypes = flags => {
   // set agent options
   // @todo: add path to certificate as input paramter ?
   const httpsOptions = {
@@ -41,15 +40,15 @@ const getFragmentTypes = (flags) => {
     // cert: fs.readFileSync(
     //   '/Users/svale/.config/valet/CA/LaravelValetCASelfSigned.pem'
     // ),
-    rejectUnauthorized: !flags.unsafe
+    rejectUnauthorized: !flags.unsafe,
   }
   const agent = new https.Agent(httpsOptions)
 
-   // Add Authorization token (Bearer) to headers
+  // Add Authorization token (Bearer) to headers
   const headers = {
     'Content-Type': 'application/json',
   }
-  if(flags.token) {
+  if (flags.token) {
     headers.Authorization = `Bearer ${flags.token}`
   }
 
@@ -74,42 +73,38 @@ const getFragmentTypes = (flags) => {
               }
             }
           }
-        `
+        `,
+    }),
+  })
+    .then(result => {
+      if (!result.ok) {
+        throw Error(result.statusText)
+      }
+      return result.json()
     })
-  })
-  .then(result => {
-    if (!result.ok) {
-      throw Error(result.statusText);
-    }
-    return result.json();
-  })
-  .then(result => {
-    if(result.errors) {
-      throw Error(result.errors[0].message);
-    }
-    if(result.data) {
-      // here we're filtering out any type information unrelated to unions or interfaces
-      const filteredData = result.data.__schema.types.filter(
-        type => type.possibleTypes !== null
-      )
-      result.data.__schema.types = filteredData
-      fs.writeFile(
-        flags.output,
-        JSON.stringify(result.data),
-        err => {
+    .then(result => {
+      if (result.errors) {
+        throw Error(result.errors[0].message)
+      }
+      if (result.data) {
+        // here we're filtering out any type information unrelated to unions or interfaces
+        const filteredData = result.data.__schema.types.filter(
+          type => type.possibleTypes !== null
+        )
+        result.data.__schema.types = filteredData
+        fs.writeFile(flags.output, JSON.stringify(result.data), err => {
           if (err) {
             console.error('Error writing fragmentTypes file', err)
           } else {
             console.log('Fragment types successfully extracted!')
           }
-        }
-      )
-      return true
-    }
-  })
-  .catch(error => {
-    console.log(error);
-  })
+        })
+        return true
+      }
+    })
+    .catch(error => {
+      console.log(error)
+    })
 }
 
 // Helpstring for meow
@@ -135,35 +130,35 @@ const help = `
 const options = {
   booleanDefault: undefined,
   flags: {
-      url: {
-          type: 'string',
-          alias: 'u',
-          default: process.env.APP_GRAPHQL_ENDPOINT,
-      },
-      output: {
-          type: 'string',
-          alias: 'o',
-          default: './fragmentTypes.json',
-      },
-      token: {
-          type: 'string',
-          alias: 't',
-          default: process.env.APP_GRAPHQL_TOKEN || false,
-      },
-      unsafe: {
-        type: 'boolean',
-        alias: 'z',
-        default: false
-    }
-  }
+    url: {
+      type: 'string',
+      alias: 'u',
+      default: process.env.APP_GRAPHQL_ENDPOINT,
+    },
+    output: {
+      type: 'string',
+      alias: 'o',
+      default: './fragmentTypes.json',
+    },
+    token: {
+      type: 'string',
+      alias: 't',
+      default: process.env.APP_GRAPHQL_TOKEN || false,
+    },
+    unsafe: {
+      type: 'boolean',
+      alias: 'z',
+      default: false,
+    },
+  },
 }
 
-const { flags } = meow(help, options);
+const { flags } = meow(help, options)
 getFragmentTypes(flags)
 
 /**
-* Handle unhandled rejections  - just in case
-*/
+ * Handle unhandled rejections  - just in case
+ */
 process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', reason.stack || reason)
 })
