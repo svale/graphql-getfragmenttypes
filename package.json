@@ -1,0 +1,25 @@
+{
+  "name": "graphql-getfragmenttypes",
+  "version": "1.0.0",
+  "description": "Script to query the server schema to obtain the necessary information about unions and interfaces and write it to a file.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/svale/graphql-getfragmenttypes.git"
+  },
+  "keywords": [
+    "apollo",
+    "graphql",
+    "javascript",
+    "node"
+  ],
+  "author": "Svale Fossåskaret",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/svale/graphql-getfragmenttypes/issues"
+  },
+  "homepage": "https://github.com/svale/graphql-getfragmenttypes#readme"
+}
