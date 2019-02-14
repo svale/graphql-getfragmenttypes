@@ -4,6 +4,7 @@
   "description": "Script to query the server schema to obtain the necessary information about unions and interfaces and write it to a file.",
   "main": "index.js",
   "scripts": {
+    "build": "babel ./src -d ./lib",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,5 +28,9 @@
     "meow": "^5.0.0",
     "minimist": "^1.2.0",
     "node-fetch": "^2.3.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0"
   }
 }
