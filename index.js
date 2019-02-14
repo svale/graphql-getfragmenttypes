@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+'use strict';
+
 /**
  * getFragmentTypes.js
  *
@@ -8,7 +11,8 @@
  *
  * Work in progress
  * @todo:
- * - error handling
+ * add documentation
+ * add tests
  *
  * @license MIT
  * @author Svale Fossåskaret <svale@3by5.no>
@@ -17,33 +21,35 @@
 const fs = require('fs')
 const https = require('https')
 const fetch = require('node-fetch')
-const args = require('minimist')(process.argv.slice(2))
+const minimist = require('minimist')
 
 // @todo: document
-const dotEnvPath =
-  args.e ||
-  args.env ||
-  './.env'
+// ?? add option to set .env file path
+require('dotenv').config()
 
-require('dotenv').config({ path: dotEnvPath })
-
-// @todo: document
-const httpEndpoint =
-  args.u ||
-  args.url ||
-  process.env.VUE_APP_GRAPHQL_HTTP
-
-// @todo: document
-const token =
-  args.t ||
-  args.token ||
-  process.env.API_TOKEN
-
-// @todo: document
-const rejectUnauthorized =
-  args.z ||
-  args.unsafe ||
-  false
+var args = minimist(process.argv.slice(2), {
+  string: [
+    'env',
+    'url',
+    'output',
+    'token'
+  ],
+  boolean: 'unsafe',
+  alias: {
+    e: 'env',
+    u: 'url',
+    z: 'unsafe',
+    o: 'output',
+    t: 'token'
+  },
+  default: {
+    env: './.env',
+    url: process.env.VUE_APP_GRAPHQL_HTTP,
+    unsafe: false,
+    output: './fragmentTypes.json',
+    token: process.env.API_TOKEN || null
+   },
+})
 
 // @todo: add path to certificate as input paramter ?
 const options = {
@@ -53,18 +59,28 @@ const options = {
   // cert: fs.readFileSync(
   //   '/Users/svale/.config/valet/CA/LaravelValetCASelfSigned.pem'
   // ),
-  rejectUnauthorized
+  rejectUnauthorized: args.unsafe
 }
-
 const agent = new https.Agent(options)
 
-fetch(httpEndpoint, {
-  agent: agent,
+/**
+ * Add Authorization token (Bearer) to headers
+ * @todo: document
+ */
+const headers = {
+  'Content-Type': 'application/json',
+}
+if(args.token) {
+  headers.Authorization = `Bearer ${args.token}`
+}
+
+/**
+ *  fetch schema and get fragment types
+ */
+fetch(args.url, {
+  agent,
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`
-  },
+  headers,
   body: JSON.stringify({
     variables: {},
     query: `
@@ -82,16 +98,26 @@ fetch(httpEndpoint, {
       `
   })
 })
-  .then(result => result.json())
-  .then(result => {
-    // console.log(result)
+.then(result => {
+  if (!result.ok) {
+    throw Error(result.statusText);
+  }
+  return result.json();
+})
+.then(result => {
+
+  if(result.errors) {
+    throw Error(result.errors[0].message);
+  }
+
+  if(result.data) {
     // here we're filtering out any type information unrelated to unions or interfaces
     const filteredData = result.data.__schema.types.filter(
       type => type.possibleTypes !== null
     )
     result.data.__schema.types = filteredData
     fs.writeFile(
-      './graphql/fragmentTypes.json', // @todo: setting for output path
+      args.output,
       JSON.stringify(result.data),
       err => {
         if (err) {
@@ -101,4 +127,17 @@ fetch(httpEndpoint, {
         }
       }
     )
-  })
+    return true
+  }
+})
+.catch(error => {
+  console.log(error);
+})
+
+/**
+ * Handle unhandled rejections
+ * Just in case
+ */
+process.on('unhandledRejection', (reason, promise) => {
+  console.log('Unhandled Rejection at:', reason.stack || reason)
+})
