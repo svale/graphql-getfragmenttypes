@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npm run lint && babel ./src -d ./",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -27,7 +28,6 @@
   "dependencies": {
     "dotenv": "^6.2.0",
     "meow": "^5.0.0",
-    "minimist": "^1.2.0",
     "node-fetch": "^2.3.0"
   },
   "devDependencies": {
