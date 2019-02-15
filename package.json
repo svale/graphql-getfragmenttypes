@@ -1,6 +1,6 @@
 {
   "name": "graphql-getfragmenttypes",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Script to query the server schema to obtain the necessary information about unions and interfaces and write it to a file.",
   "main": "index.js",
   "scripts": {
