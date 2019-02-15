@@ -20,7 +20,7 @@
     "node"
   ],
   "author": "Svale Fossåskaret",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/svale/graphql-getfragmenttypes/issues"
   },
