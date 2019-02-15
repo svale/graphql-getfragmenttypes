@@ -1,8 +1,6 @@
 Graphql Get Fragment Types
 =======================================
-
 Get fragment types from GraphQL schema.
-* * *
 
 Script to query the server schema to obtain the necessary information about unions and interfaces and write it to a file. As per the guide https://www.apollographql.com/docs/react/advanced/fragments.html#fragment-matcher
 
@@ -51,7 +49,7 @@ APP_GRAPHQL_ENDPOINT = 'http://your.endpoint.url'
 APP_GRAPHQL_TOKEN = 'yourlongtokenhash'
 ```
 
-#### 3. Add script as a task in your package.json. (Optionally prepended with path to certificate and custom output path.)
+#### 3. Add as a custom script in your package.json. (Optionally prepended with path to certificate and custom output path.)
 ___
 ```json
 {
