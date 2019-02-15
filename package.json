@@ -4,7 +4,7 @@
   "description": "Script to query the server schema to obtain the necessary information about unions and interfaces and write it to a file.",
   "main": "index.js",
   "scripts": {
-    "build": "npm run lint && babel ./src -d ./lib",
+    "build": "npm run lint && babel ./src -d ./",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./src"
   },

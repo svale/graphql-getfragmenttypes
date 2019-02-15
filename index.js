@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+
 'use strict';
 
 /**
@@ -25,14 +26,12 @@ var fetch = require('node-fetch');
 var meow = require('meow');
 require('dotenv').config(); // @todo: add option to set .env file path ??
 
-
 /**
  * getFragmetypes
  *
  * @param {object} flags input flags parsed by meow
  */
 var getFragmentTypes = function getFragmentTypes(flags) {
-
   // set agent options
   // @todo: add path to certificate as input paramter ?
   var httpsOptions = {
@@ -95,7 +94,7 @@ var getFragmentTypes = function getFragmentTypes(flags) {
 };
 
 // Helpstring for meow
-var help = '\n  Usage\n    $ node index.js [flags]\n\n  Options\n    --url, -u     URL to the API Endpoint.\n                  Can also be set in .env file as APP_GRAPHQL_ENDPOINT\n    --output, -o  Full path to outputfile. Defaults to \'./fragmentTypes.json\'\n    --token, -t   API endpoint token. Added to headers as "Bearer: {token}"\n                  Can be set in .env file as APP_GRAPHQL_TOKEN\n    --unsafe -z   Warning - unsafe! Disable test for Certificats.\n                  Can be useful with private certificates in local environment but please\n                  first try extending well known CA with NODE_EXTRA_CA_CERTS (se example below)\n  Examples\n    $ node index.js -u http://your.endpoint.url -o ./graphql/fragmentTypes.json\n    $ node index --unsafe --token AxLTFkODgyZjI2M2VhYyIsImlhdCI6MTU1MDE2NTYyNCwiZXhwIjoxNTUwMTY5Mj\n    $ NODE_EXTRA_CA_CERTS=\'/full/path/to/SelfSigned.pem\' node node_modules/graphql-getfragmenttypes\n';
+var help = '\n  Usage\n    $ node index.js [flags]\n\n  Options\n    --url, -u     URL to the API Endpoint.\n                  Can also be set in .env file as APP_GRAPHQL_ENDPOINT\n    --output, -o  Full path to outputfile. Defaults to \'./fragmentTypes.json\'\n    --token, -t   API endpoint token. Added to headers as "Bearer: {token}"\n                  Can be set in .env file as APP_GRAPHQL_TOKEN\n    --unsafe -z   Warning - unsafe! Disable test for Certificats.\n                  Can be useful with private certificates in local environment but please\n                  first try extending well known CA with NODE_EXTRA_CA_CERTS (se example below)\n    --version     Show current version\n    --help        Show current help\n\n    Examples\n    $ node index.js -u http://your.endpoint.url -o ./graphql/fragmentTypes.json\n    $ node index --unsafe --token AxLTFkODgyZjI2M2VhYyIsImlhdCI6MTU1MDE2NTYyNCwiZXhwIjoxNTUwMTY5Mj\n    $ NODE_EXTRA_CA_CERTS=\'/full/path/to/SelfSigned.pem\' node node_modules/graphql-getfragmenttypes\n';
 // options for meow
 var options = {
   booleanDefault: undefined,
@@ -129,8 +128,8 @@ var _meow = meow(help, options),
 getFragmentTypes(flags);
 
 /**
-* Handle unhandled rejections  - just in case
-*/
+ * Handle unhandled rejections  - just in case
+ */
 process.on('unhandledRejection', function (reason, promise) {
   console.log('Unhandled Rejection at:', reason.stack || reason);
 });
