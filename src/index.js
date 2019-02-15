@@ -118,10 +118,14 @@ const help = `
     --output, -o  Full path to outputfile. Defaults to './fragmentTypes.json'
     --token, -t   API endpoint token. Added to headers as "Bearer: {token}"
                   Can be set in .env file as APP_GRAPHQL_TOKEN
-    --unsafe -z   Warning - unsafe! Disable test for Certificats.
+    --unsafe -z   Warning - unsafe! Ignores if the server certificate fails verification 
+                  against the list of supplied CAs.
                   Can be useful with private certificates in local environment but please
                   first try extending well known CA with NODE_EXTRA_CA_CERTS (se example below)
-  Examples
+    --version     Show current version
+    --help        Show current help
+
+    Examples
     $ node index.js -u http://your.endpoint.url -o ./graphql/fragmentTypes.json
     $ node index --unsafe --token AxLTFkODgyZjI2M2VhYyIsImlhdCI6MTU1MDE2NTYyNCwiZXhwIjoxNTUwMTY5Mj
     $ NODE_EXTRA_CA_CERTS='/full/path/to/SelfSigned.pem' node node_modules/graphql-getfragmenttypes
